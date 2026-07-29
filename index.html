@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1C1220">
+<title>A Conta do Casal — Placar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Spectral:ital,wght@0,300;0,400;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ameixa-escura:#1C1220;
+    --ameixa:#2A1B2E;
+    --vinho:#6B2C43;
+    --champanhe:#C9A25B;
+    --areia:#EBE3D8;
+    --papel:#F4EFE9;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:
+      radial-gradient(120% 90% at 20% -10%, rgba(107,44,67,0.35), transparent 55%),
+      linear-gradient(165deg, var(--ameixa-escura) 0%, var(--ameixa) 55%, var(--ameixa-escura) 100%);
+    background-attachment:fixed;
+    min-height:100%;
+    font-family:'Archivo',sans-serif;
+    color:var(--papel);
+    overscroll-behavior:none;
+  }
+  #app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:120px;}
+
+  /* headers */
+  .header{padding:28px 20px 6px;}
+  .tag{
+    font-family:'Archivo',sans-serif; font-weight:800; letter-spacing:2.5px;
+    font-size:11px; color:var(--champanhe); text-transform:uppercase;
+  }
+  .title{
+    font-family:'Spectral',serif; font-style:italic; font-weight:300;
+    color:var(--papel); font-size:30px; margin:6px 0 2px; line-height:1.15;
+  }
+  .subtitle{
+    font-family:'Spectral',serif; font-style:italic; color:var(--areia);
+    opacity:.6; font-size:13px;
+  }
+
+  .detail-header{padding:20px 16px 4px; display:flex; align-items:center; gap:12px;}
+  .back-btn{
+    width:36px; height:36px; border-radius:11px; border:1px solid rgba(244,239,233,0.15);
+    background:rgba(255,255,255,0.04); color:var(--areia); display:flex; align-items:center;
+    justify-content:center; font-size:18px; cursor:pointer; flex-shrink:0;
+  }
+  .back-btn:active{background:rgba(255,255,255,0.09);}
+  .detail-titlebox{flex:1; min-width:0;}
+  .detail-name-row{display:flex; align-items:center; gap:8px;}
+  .detail-name{
+    font-family:'Spectral',serif; font-style:italic; font-weight:300; color:var(--papel);
+    font-size:22px; line-height:1.2; word-break:break-word;
+  }
+  .detail-name-input{
+    font-family:'Spectral',serif; font-style:italic; font-weight:300; color:var(--papel);
+    font-size:22px; background:transparent; border:none; border-bottom:1px solid rgba(201,162,91,0.4);
+    outline:none; width:100%; padding:2px 0;
+  }
+  .pencil-btn{
+    color:rgba(201,162,91,0.6); font-size:14px; cursor:pointer; flex-shrink:0; padding:4px;
+  }
+
+  /* board / panel */
+  .board{padding:18px 16px 16px; display:flex; flex-direction:column; gap:16px;}
+
+  /* folder tile */
+  .folder-tile{
+    display:flex; align-items:center; gap:12px; padding:16px;
+    border-radius:18px; cursor:pointer; position:relative; overflow:hidden;
+    background:linear-gradient(120deg, rgba(201,162,91,0.14), rgba(201,162,91,0.05));
+    border:1.5px solid rgba(201,162,91,0.4);
+  }
+  .folder-icon{font-size:26px; flex-shrink:0;}
+  .folder-textbox{flex:1; min-width:0;}
+  .folder-label{font-family:'Archivo',sans-serif; font-weight:800; font-size:14px; color:var(--papel); letter-spacing:.2px;}
+  .folder-sub{font-family:'Spectral',serif; font-style:italic; font-size:11.5px; color:var(--areia); opacity:.55; margin-top:2px;}
+  .folder-count-num{
+    font-family:'Archivo',sans-serif; font-weight:800; font-size:22px; color:var(--champanhe);
+    min-width:34px; text-align:right; display:inline-block;
+  }
+  .bump{animation:bumpAnim .5s ease;}
+  @keyframes bumpAnim{ 0%{transform:scale(1);} 35%{transform:scale(1.4); color:#e7cd94;} 100%{transform:scale(1);} }
+
+  .card{
+    background:rgba(255,255,255,0.035);
+    border:1px solid rgba(201,162,91,0.18);
+    border-radius:18px; padding:18px 16px 16px; position:relative; overflow:hidden;
+    backdrop-filter:blur(2px); cursor:pointer;
+  }
+  .card::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:3px;
+    background:linear-gradient(90deg, var(--vinho), rgba(107,44,67,0.2));
+  }
+  .card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .card-name{
+    font-family:'Archivo',sans-serif; font-weight:700; color:var(--papel);
+    font-size:17px; letter-spacing:.2px; word-break:break-word;
+  }
+  .card-actions{display:flex; gap:6px; flex-shrink:0; align-items:center;}
+  .icon-btn{
+    width:30px; height:30px; border-radius:9px; border:1px solid rgba(244,239,233,0.15);
+    background:rgba(255,255,255,0.04); color:var(--areia); display:flex; align-items:center;
+    justify-content:center; font-size:14px; cursor:pointer; opacity:.85;
+  }
+  .icon-btn:active{opacity:1; background:rgba(255,255,255,0.09);}
+  .icon-btn.play{color:var(--champanhe); border-color:rgba(201,162,91,0.4);}
+  .icon-btn.danger{color:#d98a8a;}
+  .chevron{color:rgba(244,239,233,0.3); font-size:16px; display:flex; align-items:center;}
+
+  .progress-row{display:flex; align-items:center; gap:10px; margin-top:14px;}
+  .progress-track{
+    flex:1; height:11px; border-radius:7px; background:rgba(0,0,0,0.25);
+    overflow:hidden; border:1px solid rgba(255,255,255,0.05);
+  }
+  .progress-fill{
+    height:100%; border-radius:7px; width:0%;
+    background:linear-gradient(90deg, #a9813f, var(--champanhe) 60%, #e7cd94);
+    box-shadow:0 0 10px rgba(201,162,91,0.35);
+  }
+  .progress-pct{
+    font-family:'Archivo',sans-serif; font-weight:800; color:var(--champanhe);
+    font-size:15px; min-width:46px; text-align:right;
+  }
+  .progress-meta{font-size:11px; color:var(--areia); opacity:.5; margin-top:5px; letter-spacing:.3px;}
+  .see-completed{
+    font-family:'Archivo',sans-serif; font-size:11px; color:var(--champanhe); opacity:.75;
+    margin-top:8px; cursor:pointer; text-decoration:underline; text-underline-offset:2px;
+  }
+
+  /* detail: subtasks */
+  .subtasks{margin-top:14px; display:flex; flex-direction:column; gap:8px;}
+  .subtask{
+    display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--areia);
+    transition:opacity .35s ease, transform .35s ease, max-height .35s ease, margin .35s ease, padding .35s ease;
+  }
+  .subtask.leaving{ opacity:0; transform:scale(.92) translateX(10px); max-height:0!important; margin:0!important; overflow:hidden; }
+  .drag-handle{
+    color:rgba(244,239,233,0.3); font-size:15px; cursor:grab; flex-shrink:0; padding:2px 4px;
+    touch-action:none; letter-spacing:-1px;
+  }
+  .subtask .check{
+    width:19px; height:19px; border-radius:6px; border:1.5px solid rgba(201,162,91,0.55);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px;
+    color:var(--ameixa-escura); cursor:pointer;
+  }
+  .subtask.done .check{background:var(--champanhe); border-color:var(--champanhe);}
+  .subtask .stext{flex:1; cursor:pointer; min-width:0; word-break:break-word;}
+  .subtask.done .stext{opacity:.45; text-decoration:line-through;}
+  .subtask .del{color:rgba(244,239,233,0.35); font-size:15px; cursor:pointer; padding:2px 4px; flex-shrink:0;}
+  .subtask.drag-ghost-source{opacity:.25;}
+
+  .add-sub-row{display:flex; gap:8px; margin-top:12px;}
+  .add-sub-row input{
+    flex:1; background:rgba(0,0,0,0.2); border:1px solid rgba(244,239,233,0.15);
+    border-radius:10px; padding:9px 11px; color:var(--papel); font-family:'Archivo',sans-serif;
+    font-size:13px; outline:none;
+  }
+  .add-sub-row input::placeholder{color:rgba(244,239,233,0.35);}
+  .add-sub-row button{
+    background:rgba(201,162,91,0.15); border:1px solid rgba(201,162,91,0.4); color:var(--champanhe);
+    border-radius:10px; padding:0 14px; font-weight:700; font-size:16px; cursor:pointer;
+  }
+
+  .detail-animate-btn{
+    margin-top:18px; width:100%; background:linear-gradient(90deg, var(--vinho), #7d3550);
+    color:var(--papel); border:1px solid rgba(201,162,91,0.4);
+    font-family:'Archivo',sans-serif; font-weight:800; letter-spacing:1px; font-size:13px;
+    text-transform:uppercase; padding:13px; border-radius:14px; cursor:pointer;
+  }
+
+  /* add block */
+  .add-block-card{
+    border:1.5px dashed rgba(201,162,91,0.35); border-radius:18px; padding:16px;
+    display:flex; gap:8px; background:rgba(255,255,255,0.015);
+  }
+  .add-block-card input{
+    flex:1; background:transparent; border:none; color:var(--papel);
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; outline:none;
+  }
+  .add-block-card input::placeholder{color:rgba(244,239,233,0.35); font-weight:600;}
+  .add-block-card button{
+    background:var(--champanhe); border:none; color:var(--ameixa-escura); font-weight:800;
+    border-radius:10px; padding:8px 14px; font-size:13px; cursor:pointer;
+  }
+
+  /* animate-all button */
+  .animate-all-wrap{
+    position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center;
+    padding:14px 20px calc(18px + env(safe-area-inset-bottom)); z-index:40;
+    background:linear-gradient(to top, rgba(28,18,32,0.95), rgba(28,18,32,0));
+    pointer-events:none;
+  }
+  .animate-all-wrap button{
+    pointer-events:auto; max-width:480px; width:100%;
+    background:linear-gradient(90deg, var(--vinho), #7d3550);
+    color:var(--papel); border:1px solid rgba(201,162,91,0.4);
+    font-family:'Archivo',sans-serif; font-weight:800; letter-spacing:1px; font-size:13px;
+    text-transform:uppercase; padding:14px; border-radius:14px; cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  /* clean / recording mode */
+  body.clean-mode .edit-ui{display:none !important;}
+  body.clean-mode .card{border-color:rgba(201,162,91,0.28); cursor:default;}
+  body.clean-mode .header .subtitle{opacity:.85;}
+
+  .exit-clean-btn{
+    position:fixed; left:0; right:0; bottom:0; display:none; justify-content:center;
+    padding:14px 20px calc(18px + env(safe-area-inset-bottom)); z-index:50;
+    opacity:0; transition:opacity .5s ease;
+  }
+  .exit-clean-btn.show{display:flex; opacity:1;}
+  .exit-clean-btn button{
+    background:rgba(0,0,0,0.35); color:var(--champanhe); border:1px solid rgba(201,162,91,0.5);
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:12px; letter-spacing:1px;
+    text-transform:uppercase; padding:10px 20px; border-radius:20px; cursor:pointer;
+    backdrop-filter:blur(6px);
+  }
+
+  /* focus overlay (single-block animation) */
+  #focusOverlay{
+    position:fixed; inset:0; z-index:100; display:none; flex-direction:column;
+    align-items:center; padding:32px 24px; overflow-y:auto;
+    background:
+      radial-gradient(120% 90% at 50% -10%, rgba(107,44,67,0.45), transparent 55%),
+      linear-gradient(165deg, var(--ameixa-escura) 0%, var(--ameixa) 60%, var(--ameixa-escura) 100%);
+  }
+  #focusOverlay.show{display:flex;}
+  #focusOverlay::after{
+    content:''; position:fixed; left:0; right:0; bottom:0; height:5px; background:var(--vinho);
+  }
+  .focus-folder-badge{
+    position:fixed; top:18px; right:18px; z-index:150;
+    background:rgba(0,0,0,0.35); border:1px solid rgba(201,162,91,0.4); border-radius:20px;
+    padding:8px 14px; display:flex; align-items:center; gap:7px;
+    font-family:'Archivo',sans-serif; font-weight:800; color:var(--champanhe); font-size:13px;
+    backdrop-filter:blur(6px);
+  }
+  .focus-tag{
+    font-family:'Archivo',sans-serif; font-weight:800; letter-spacing:3px; font-size:12px;
+    color:var(--champanhe); text-transform:uppercase; text-align:center; margin-top:12px;
+  }
+  .focus-name{
+    font-family:'Spectral',serif; font-style:italic; font-weight:300; color:var(--papel);
+    font-size:27px; text-align:center; margin:12px 0 26px; line-height:1.2;
+  }
+  .focus-pct{
+    font-family:'Archivo',sans-serif; font-weight:800; color:var(--champanhe);
+    font-size:54px; text-align:center; margin-bottom:18px; letter-spacing:1px;
+  }
+  .focus-track{
+    width:100%; max-width:380px; height:16px; border-radius:10px; background:rgba(0,0,0,0.3);
+    overflow:hidden; border:1px solid rgba(255,255,255,0.06);
+  }
+  .focus-fill{
+    height:100%; width:0%; border-radius:10px;
+    background:linear-gradient(90deg, #a9813f, var(--champanhe) 60%, #e7cd94);
+    box-shadow:0 0 18px rgba(201,162,91,0.5);
+  }
+  .focus-meta{margin-top:12px; font-size:12px; color:var(--areia); opacity:.55; letter-spacing:.3px;}
+
+  .focus-list{
+    width:100%; max-width:380px; margin-top:24px; display:flex; flex-direction:column; gap:8px;
+  }
+  .focus-item{
+    display:flex; align-items:center; gap:10px; font-family:'Archivo',sans-serif; font-size:13.5px;
+    color:var(--areia); padding:9px 11px; border-radius:11px; background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.06);
+    transition:background .35s, border-color .35s, opacity .35s ease, transform .35s ease,
+               max-height .35s ease, margin .35s ease, padding .35s ease;
+  }
+  .focus-item .fcheck{
+    width:18px; height:18px; border-radius:6px; border:1.5px solid rgba(201,162,91,0.5);
+    display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0;
+    color:var(--ameixa-escura);
+  }
+  .focus-item.leaving{
+    opacity:0; transform:scale(.9) translateX(8px); max-height:0!important; margin:0!important;
+    padding-top:0; padding-bottom:0; overflow:hidden; border-width:0;
+  }
+  .focus-empty-hint{
+    font-family:'Spectral',serif; font-style:italic; color:var(--areia); opacity:.4; font-size:13px;
+    text-align:center; margin-top:24px;
+  }
+
+  .focus-exit{
+    margin-top:36px; margin-bottom:20px; opacity:0; transition:opacity .5s ease; pointer-events:none;
+  }
+  .focus-exit.show{opacity:1; pointer-events:auto;}
+  .focus-exit button{
+    background:rgba(0,0,0,0.35); color:var(--champanhe); border:1px solid rgba(201,162,91,0.5);
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:12px; letter-spacing:1px;
+    text-transform:uppercase; padding:10px 22px; border-radius:20px; cursor:pointer;
+  }
+
+  /* flying chip (shared by focus + panel animations) */
+  .flying-chip{
+    position:fixed; z-index:300; display:flex; align-items:center; gap:8px;
+    font-family:'Archivo',sans-serif; font-weight:700; font-size:12.5px; color:var(--papel);
+    background:rgba(201,162,91,0.22); border:1px solid rgba(201,162,91,0.55);
+    border-radius:10px; padding:8px 11px; pointer-events:none; box-shadow:0 6px 18px rgba(0,0,0,0.35);
+  }
+  .flying-chip .chk{color:var(--champanhe); font-weight:800; flex-shrink:0;}
+
+  #confettiCanvas{position:fixed; inset:0; z-index:200; pointer-events:none; display:none;}
+
+  .empty-hint{
+    text-align:center; color:var(--areia); opacity:.4; font-family:'Spectral',serif;
+    font-style:italic; font-size:13px; padding:30px 20px;
+  }
+
+  /* folder view */
+  .folder-group-label{
+    font-family:'Archivo',sans-serif; font-weight:800; letter-spacing:1px; font-size:11px;
+    color:var(--champanhe); text-transform:uppercase; margin:6px 2px 2px;
+  }
+  .folder-row{
+    display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:11px 12px; font-size:13.5px;
+  }
+  .folder-row .fdone-check{
+    width:18px; height:18px; border-radius:6px; background:var(--champanhe); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--ameixa-escura);
+  }
+  .folder-row .ftext{flex:1; color:var(--areia); opacity:.75; text-decoration:line-through; min-width:0; word-break:break-word;}
+  .restore-btn{
+    display:flex; align-items:center; gap:5px; background:rgba(201,162,91,0.12);
+    border:1px solid rgba(201,162,91,0.4); color:var(--champanhe); border-radius:9px;
+    padding:6px 10px; font-size:11.5px; font-weight:700; cursor:pointer; flex-shrink:0;
+  }
+  .folder-total{
+    font-family:'Spectral',serif; font-style:italic; color:var(--areia); opacity:.6; font-size:13px;
+    padding:0 16px 6px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="panelHeader" class="header">
+    <div class="tag">A Conta do Casal</div>
+    <div class="title">Placar do casal</div>
+    <div class="subtitle">toda semana o placar anda.</div>
+  </div>
+
+  <div id="detailHeader" class="detail-header" style="display:none;">
+    <div class="back-btn" onclick="goToPanel()">‹</div>
+    <div class="detail-titlebox">
+      <div class="tag">A Conta do Casal</div>
+      <div class="detail-name-row">
+        <div class="detail-name" id="detailNameText"></div>
+        <div class="pencil-btn edit-ui" id="renameBtn" onclick="startRename()">✎</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="board" id="board"></div>
+</div>
+
+<div class="animate-all-wrap edit-ui" id="animateAllWrap">
+  <button onclick="animateAll()">▶ Animar placar</button>
+</div>
+<div class="exit-clean-btn" id="exitCleanBtn">
+  <button onclick="exitCleanMode()">Concluir</button>
+</div>
+
+<div id="focusOverlay">
+  <div class="focus-folder-badge"><span>📁</span><span id="focusFolderCount">0</span></div>
+  <div class="focus-tag">A Conta do Casal</div>
+  <div class="focus-name" id="focusName"></div>
+  <div class="focus-pct" id="focusPct">0%</div>
+  <div class="focus-track"><div class="focus-fill" id="focusFill"></div></div>
+  <div class="focus-meta" id="focusMeta"></div>
+  <div class="focus-list" id="focusList"></div>
+  <div class="focus-exit" id="focusExit"><button onclick="closeFocus()">Concluir</button></div>
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+/* ---------- state ---------- */
+const STORAGE_KEY = 'contaDoCasal_placar_v2';
+const OLD_STORAGE_KEY = 'contaDoCasal_placar_v1';
+let uid = () => 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+
+function seedData(){
+  return {
+    blocks: [
+      {
+        id: uid(), name: 'Apartamento em Reforma', lastDoneIds: [],
+        subtasks: [
+          {id: uid(), text: 'Definir piso', done: false},
+          {id: uid(), text: 'Escolher revestimento do banheiro', done: false},
+          {id: uid(), text: 'Contratar marcenaria', done: false},
+          {id: uid(), text: 'Pintura final', done: false},
+          {id: uid(), text: 'Entrega das chaves', done: false},
+        ]
+      },
+      {
+        id: uid(), name: 'Casamento 2027', lastDoneIds: [],
+        subtasks: [
+          {id: uid(), text: 'Fechar buffet', done: false},
+          {id: uid(), text: 'Definir data', done: false},
+          {id: uid(), text: 'Fechar local', done: false},
+          {id: uid(), text: 'Lista de convidados', done: false},
+          {id: uid(), text: 'Fornecedores (foto/vídeo, música)', done: false},
+          {id: uid(), text: 'Vestido e traje', done: false},
+        ]
+      },
+      {
+        id: uid(), name: 'Viagens & Objetivos', lastDoneIds: [],
+        subtasks: [
+          {id: uid(), text: 'Definir destino da lua de mel', done: false},
+          {id: uid(), text: 'Reserva de emergência', done: false},
+          {id: uid(), text: 'Viagem antes do casamento', done: false},
+        ]
+      }
+    ]
+  };
+}
+
+function migrate(raw){
+  raw.blocks.forEach(b=>{
+    if(!Array.isArray(b.lastDoneIds)){
+      b.lastDoneIds = b.subtasks.filter(s=>s.done).map(s=>s.id);
+    }
+  });
+  return raw;
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return migrate(JSON.parse(raw));
+    const old = localStorage.getItem(OLD_STORAGE_KEY);
+    if(old){
+      const parsed = migrate(JSON.parse(old));
+      saveState(parsed);
+      return parsed;
+    }
+  }catch(e){}
+  const seeded = seedData();
+  saveState(seeded);
+  return seeded;
+}
+function saveState(s){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+}
+
+let state = loadState();
+let view = 'panel'; // 'panel' | 'detail' | 'folder'
+let currentDetailId = null;
+
+function percentOf(block){
+  if(!block.subtasks.length) return 0;
+  const done = block.subtasks.filter(s=>s.done).length;
+  return Math.round(done/block.subtasks.length*100);
+}
+function findBlock(id){ return state.blocks.find(b=>b.id===id); }
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function totalCompletedCount(){
+  return state.blocks.reduce((acc,b)=> acc + b.subtasks.filter(s=>s.done).length, 0);
+}
+
+/* ---------- navigation ---------- */
+function goToDetail(blockId){ currentDetailId = blockId; view = 'detail'; render(); }
+function goToPanel(){ currentDetailId = null; view = 'panel'; render(); }
+function goToFolder(){ view = 'folder'; render(); }
+
+/* ---------- render ---------- */
+function render(){
+  document.getElementById('panelHeader').style.display = view==='panel' ? '' : 'none';
+  document.getElementById('detailHeader').style.display = (view==='detail'||view==='folder') ? 'flex' : 'none';
+  document.getElementById('animateAllWrap').style.display = view==='panel' ? 'flex' : 'none';
+
+  if(view==='detail'){ renderDetail(); }
+  else if(view==='folder'){ renderFolder(); }
+  else { renderPanel(); }
+}
+
+function renderPanel(){
+  const board = document.getElementById('board');
+  const total = totalCompletedCount();
+  let html = `
+    <div class="folder-tile" id="folderTile" onclick="if(!document.body.classList.contains('clean-mode')) goToFolder()">
+      <div class="folder-icon">📁</div>
+      <div class="folder-textbox">
+        <div class="folder-label">Objetivos Concluídos</div>
+        <div class="folder-sub edit-ui">toque para ver e restaurar</div>
+      </div>
+      <div class="folder-count-num" id="folderCount">${total}</div>
+    </div>
+  `;
+  if(!state.blocks.length){
+    html += '<div class="empty-hint">nenhum bloco ainda — crie o primeiro objetivo do casal abaixo.</div>';
+  } else {
+    html += state.blocks.map(b => {
+      const pct = percentOf(b);
+      const doneCount = b.subtasks.filter(s=>s.done).length;
+      return `
+      <div class="card" data-id="${b.id}" onclick="cardTap(event,'${b.id}')">
+        <div class="card-head">
+          <div class="card-name">${escapeHtml(b.name)}</div>
+          <div class="card-actions">
+            <div class="icon-btn play" onclick="event.stopPropagation(); animateBlock('${b.id}')" title="Animar">▶</div>
+            <div class="icon-btn danger edit-ui" onclick="event.stopPropagation(); deleteBlock('${b.id}')" title="Excluir">✕</div>
+            <div class="chevron">›</div>
+          </div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" id="fill-${b.id}" style="width:${pct}%"></div></div>
+          <div class="progress-pct" id="pct-${b.id}">${pct}%</div>
+        </div>
+        <div class="progress-meta" id="meta-${b.id}">${doneCount}/${b.subtasks.length} concluídas</div>
+      </div>`;
+    }).join('');
+  }
+  board.innerHTML = html;
+
+  let addForm = document.getElementById('addBlockForm');
+  if(!addForm){
+    addForm = document.createElement('div');
+    addForm.id = 'addBlockForm';
+    addForm.className = 'board edit-ui';
+    addForm.style.paddingTop = '0';
+    addForm.innerHTML = `
+      <div class="add-block-card">
+        <input id="newBlockName" placeholder="novo bloco (ex: Casamento 2027)" maxlength="40" onkeydown="if(event.key==='Enter') addBlock()">
+        <button onclick="addBlock()">+ Bloco</button>
+      </div>`;
+    document.getElementById('app').appendChild(addForm);
+  }
+  addForm.style.display = '';
+}
+
+function cardTap(e, blockId){ goToDetail(blockId); }
+
+function renderDetail(){
+  const block = findBlock(currentDetailId);
+  const addForm = document.getElementById('addBlockForm');
+  if(addForm) addForm.style.display = 'none';
+  if(!block){ goToPanel(); return; }
+
+  document.getElementById('detailNameText').textContent = block.name;
+  document.getElementById('renameBtn').style.display = '';
+
+  const pct = percentOf(block);
+  const doneCount = block.subtasks.filter(s=>s.done).length;
+  const pending = block.subtasks.filter(s=>!s.done);
+  const board = document.getElementById('board');
+  board.innerHTML = `
+    <div class="card" style="cursor:default;" onclick="event.stopPropagation()">
+      <div class="progress-row" style="margin-top:0;">
+        <div class="progress-track"><div class="progress-fill" id="fill-${block.id}" style="width:${pct}%"></div></div>
+        <div class="progress-pct" id="pct-${block.id}">${pct}%</div>
+      </div>
+      <div class="progress-meta" id="meta-${block.id}">${doneCount}/${block.subtasks.length} concluídas</div>
+      ${doneCount>0 ? `<div class="see-completed" onclick="goToFolder()">ver ${doneCount} concluído(s) na pasta →</div>` : ''}
+      <div class="subtasks" id="subtaskList">
+        ${pending.length ? pending.map(s => `
+          <div class="subtask" data-sort-id="${s.id}">
+            <div class="drag-handle edit-ui">⠿</div>
+            <div class="check edit-ui" onclick="toggleSub('${block.id}','${s.id}')"></div>
+            <div class="stext" onclick="toggleSub('${block.id}','${s.id}')">${escapeHtml(s.text)}</div>
+            <div class="del edit-ui" onclick="deleteSub('${block.id}','${s.id}')">✕</div>
+          </div>
+        `).join('') : '<div class="empty-hint" style="padding:14px 0;">tudo em dia por aqui — adicione a próxima prioridade abaixo.</div>'}
+      </div>
+      <div class="add-sub-row edit-ui">
+        <input type="text" placeholder="nova subtarefa..." id="newsub-${block.id}" maxlength="60" onkeydown="if(event.key==='Enter') addSub('${block.id}')">
+        <button onclick="addSub('${block.id}')">+</button>
+      </div>
+      <button class="detail-animate-btn edit-ui" onclick="animateBlock('${block.id}')">▶ Animar este bloco</button>
+    </div>
+
+    <div class="edit-ui" style="text-align:center; padding-top:4px;">
+      <div class="icon-btn danger" style="display:inline-flex; width:auto; padding:9px 16px; gap:6px; font-size:12px; font-weight:700;" onclick="deleteBlock('${block.id}')" title="Excluir bloco">✕ Excluir bloco</div>
+    </div>
+  `;
+
+  enableDragReorder(document.getElementById('subtaskList'), '.drag-handle', '[data-sort-id]', (newOrderIds)=>{
+    const doneItems = block.subtasks.filter(s=>s.done);
+    const map = {};
+    block.subtasks.forEach(s=>map[s.id]=s);
+    const reorderedPending = newOrderIds.map(id=>map[id]).filter(Boolean);
+    block.subtasks = [...reorderedPending, ...doneItems];
+    saveState(state);
+  });
+}
+
+function renderFolder(){
+  const addForm = document.getElementById('addBlockForm');
+  if(addForm) addForm.style.display = 'none';
+  document.getElementById('detailNameText').textContent = 'Objetivos Concluídos';
+  document.getElementById('renameBtn').style.display = 'none';
+
+  const total = totalCompletedCount();
+  const board = document.getElementById('board');
+
+  const groups = state.blocks
+    .map(b => ({ block: b, items: b.subtasks.filter(s=>s.done) }))
+    .filter(g => g.items.length);
+
+  if(!groups.length){
+    board.innerHTML = '<div class="empty-hint">nenhum objetivo concluído ainda — o que for riscado aparece aqui.</div>';
+    return;
+  }
+
+  board.innerHTML = `
+    <div class="folder-total">${total} objetivo${total===1?'':'s'} concluído${total===1?'':'s'} ao todo</div>
+    ${groups.map(g => `
+      <div class="folder-group-label">${escapeHtml(g.block.name)}</div>
+      ${g.items.map(s => `
+        <div class="folder-row">
+          <div class="fdone-check">✓</div>
+          <div class="ftext">${escapeHtml(s.text)}</div>
+          <div class="restore-btn" onclick="restoreSub('${g.block.id}','${s.id}')">↺ voltar</div>
+        </div>
+      `).join('')}
+    `).join('')}
+  `;
+}
+
+/* ---------- rename ---------- */
+function startRename(){
+  const block = findBlock(currentDetailId);
+  if(!block) return;
+  const row = document.querySelector('.detail-name-row');
+  row.innerHTML = `<input class="detail-name-input" id="renameInput" maxlength="40" value="${escapeHtml(block.name)}">`;
+  const input = document.getElementById('renameInput');
+  input.focus();
+  input.select();
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') commitRename(); });
+  input.addEventListener('blur', commitRename);
+}
+function commitRename(){
+  const block = findBlock(currentDetailId);
+  const input = document.getElementById('renameInput');
+  if(block && input){
+    const val = input.value.trim();
+    if(val) block.name = val;
+    saveState(state);
+  }
+  render();
+}
+
+/* ---------- mutations ---------- */
+function addBlock(){
+  const input = document.getElementById('newBlockName');
+  const name = input.value.trim();
+  if(!name) return;
+  state.blocks.push({id: uid(), name, lastDoneIds: [], subtasks: []});
+  input.value = '';
+  saveState(state);
+  render();
+}
+function deleteBlock(id){
+  if(!confirm('Excluir este bloco e todas as subtarefas?')) return;
+  state.blocks = state.blocks.filter(b=>b.id!==id);
+  saveState(state);
+  if(currentDetailId === id){ goToPanel(); } else { render(); }
+}
+function addSub(blockId){
+  const input = document.getElementById('newsub-'+blockId);
+  const text = input.value.trim();
+  if(!text) return;
+  const block = findBlock(blockId);
+  block.subtasks.push({id: uid(), text, done:false});
+  saveState(state);
+  render();
+}
+function toggleSub(blockId, subId){
+  const block = findBlock(blockId);
+  const sub = block.subtasks.find(s=>s.id===subId);
+  sub.done = !sub.done;
+  saveState(state);
+  render();
+}
+function restoreSub(blockId, subId){
+  toggleSub(blockId, subId);
+}
+function deleteSub(blockId, subId){
+  const block = findBlock(blockId);
+  block.subtasks = block.subtasks.filter(s=>s.id!==subId);
+  saveState(state);
+  render();
+}
+
+/* ---------- drag reorder (pointer events, no external libs) ---------- */
+function enableDragReorder(listEl, handleSelector, itemSelector, onReorder){
+  if(!listEl) return;
+  let dragEl = null, ghost = null, offsetY = 0;
+
+  listEl.addEventListener('pointerdown', onDown);
+
+  function onDown(e){
+    const handle = e.target.closest(handleSelector);
+    if(!handle) return;
+    const item = handle.closest(itemSelector);
+    if(!item) return;
+    e.preventDefault();
+    dragEl = item;
+    const rect = dragEl.getBoundingClientRect();
+    offsetY = e.clientY - rect.top;
+
+    ghost = dragEl.cloneNode(true);
+    ghost.style.position = 'fixed';
+    ghost.style.left = rect.left+'px';
+    ghost.style.top = rect.top+'px';
+    ghost.style.width = rect.width+'px';
+    ghost.style.zIndex = 999;
+    ghost.style.pointerEvents = 'none';
+    ghost.style.boxShadow = '0 10px 26px rgba(0,0,0,0.4)';
+    ghost.style.borderRadius = '10px';
+    ghost.style.background = 'rgba(42,27,46,0.95)';
+    ghost.style.transform = 'scale(1.02)';
+    document.body.appendChild(ghost);
+    dragEl.classList.add('drag-ghost-source');
+
+    document.body.style.touchAction = 'none';
+    document.addEventListener('pointermove', onMove, {passive:false});
+    document.addEventListener('pointerup', onUp);
+  }
+
+  function onMove(e){
+    if(!dragEl) return;
+    if(e.cancelable) e.preventDefault();
+    ghost.style.top = (e.clientY - offsetY) + 'px';
+
+    const siblings = Array.from(listEl.children).filter(el=>el!==dragEl && el.matches(itemSelector));
+    let target = null, insertBefore = true;
+    for(const sib of siblings){
+      const r = sib.getBoundingClientRect();
+      const mid = r.top + r.height/2;
+      if(e.clientY < mid){ target = sib; insertBefore = true; break; }
+    }
+    if(!target && siblings.length){ target = siblings[siblings.length-1]; insertBefore = false; }
+    if(target){
+      if(insertBefore) listEl.insertBefore(dragEl, target);
+      else listEl.insertBefore(dragEl, target.nextSibling);
+    }
+  }
+
+  function onUp(){
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.body.style.touchAction = '';
+    if(ghost){ ghost.remove(); ghost = null; }
+    if(dragEl){ dragEl.classList.remove('drag-ghost-source'); }
+    const newOrder = Array.from(listEl.children)
+      .filter(el=>el.matches(itemSelector))
+      .map(el=>el.getAttribute('data-sort-id'));
+    dragEl = null;
+    if(newOrder.length) onReorder(newOrder);
+  }
+}
+
+/* ---------- animation math helpers ---------- */
+function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
+
+function animateValue(from, to, duration, onUpdate, onDone){
+  const start = performance.now();
+  function step(now){
+    const t = Math.min((now-start)/duration, 1);
+    const eased = easeOutCubic(t);
+    const val = from + (to-from)*eased;
+    onUpdate(val, t);
+    if(t < 1){ requestAnimationFrame(step); }
+    else { onUpdate(to, 1); if(onDone) onDone(); }
+  }
+  requestAnimationFrame(step);
+}
+
+function computeDelta(block){
+  const total = block.subtasks.length;
+  const startDoneIds = new Set(block.lastDoneIds || []);
+  const startCount = total ? block.subtasks.filter(s=>startDoneIds.has(s.id)).length : 0;
+  const endCount = total ? block.subtasks.filter(s=>s.done).length : 0;
+  const from = total ? startCount/total*100 : 0;
+  const to = total ? endCount/total*100 : 0;
+  const newlyCompleted = total ? block.subtasks.filter(s=>s.done && !startDoneIds.has(s.id)) : [];
+  const perItem = total ? 100/total : 0;
+  const thresholds = newlyCompleted.map((s,i)=> from + (i+1)*perItem);
+  return {from, to, newlyCompleted, thresholds, startDoneIds, startCount, endCount, total};
+}
+function commitBlockSnapshot(block){
+  block.lastDoneIds = block.subtasks.filter(s=>s.done).map(s=>s.id);
+}
+
+/* ---------- particle system (supports concurrent bursts) ---------- */
+let particles = [];
+let particleLoopRunning = false;
+function ensureParticleLoop(){
+  const canvas = document.getElementById('confettiCanvas');
+  if(!particleLoopRunning){
+    particleLoopRunning = true;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  function loop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.vy += p.gravity; p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.life--;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.life/p.maxLife));
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+      ctx.restore();
+    });
+    particles = particles.filter(p=> p.life>0 && p.y < canvas.height+40);
+    if(particles.length){ requestAnimationFrame(loop); }
+    else { particleLoopRunning = false; ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
+  }
+  requestAnimationFrame(loop);
+}
+function spawnBurst(x, y, count, opts){
+  opts = opts || {};
+  const colors = ['#C9A25B', '#6B2C43', '#F4EFE9', '#EBE3D8'];
+  for(let i=0;i<count;i++){
+    const angle = Math.random()*Math.PI*2;
+    const speed = (opts.speed||5) * (0.4+Math.random()*0.9);
+    const life = opts.life||42;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*speed,
+      vy: Math.sin(angle)*speed - (opts.upBias!==undefined?opts.upBias:2),
+      size: Math.random()*(opts.size||6)+3,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*360, vrot:(Math.random()-0.5)*14,
+      gravity: opts.gravity!==undefined?opts.gravity:0.28,
+      life, maxLife: life
+    });
+  }
+  ensureParticleLoop();
+}
+function fireConfetti(){
+  spawnBurst(window.innerWidth/2, window.innerHeight*0.32, 90, {speed:10, size:7, life:95, gravity:0.28, upBias:6});
+}
+function fireMiniCelebration(x,y){
+  spawnBurst(x, y, 16, {speed:4.2, size:5, life:38, gravity:0.35, upBias:1});
+}
+
+/* ---------- flying chip: item flies from source rect to a destination element ---------- */
+function flyToFolder(sourceRect, label, destEl){
+  if(!destEl) return;
+  const chip = document.createElement('div');
+  chip.className = 'flying-chip';
+  chip.innerHTML = '<span class="chk">✓</span><span>'+escapeHtml(label)+'</span>';
+  chip.style.left = sourceRect.left+'px';
+  chip.style.top = sourceRect.top+'px';
+  chip.style.width = Math.min(sourceRect.width, 240)+'px';
+  document.body.appendChild(chip);
+
+  const destRect = destEl.getBoundingClientRect();
+  const sx = sourceRect.left + sourceRect.width/2;
+  const sy = sourceRect.top + sourceRect.height/2;
+  const dx = (destRect.left + destRect.width/2) - sx;
+  const dy = (destRect.top + destRect.height/2) - sy;
+
+  const anim = chip.animate([
+    { transform:'translate(0,0) scale(1)', opacity:1 },
+    { transform:`translate(${dx*0.55}px, ${dy*0.55}px) scale(.7) rotate(-5deg)`, opacity:.95, offset:0.55 },
+    { transform:`translate(${dx}px, ${dy}px) scale(.15) rotate(6deg)`, opacity:0 }
+  ], { duration:650, easing:'cubic-bezier(.25,.6,.3,1)' });
+
+  anim.onfinish = ()=>{
+    chip.remove();
+    fireMiniCelebration(destRect.left+destRect.width/2, destRect.top+destRect.height/2);
+    bumpEl(destEl.querySelector('.folder-count-num') || destEl.querySelector('#focusFolderCount') || destEl);
+  };
+}
+function bumpEl(el){
+  if(!el) return;
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+}
+function removeRowAnimated(el, className){
+  if(!el) return;
+  const h = el.getBoundingClientRect().height;
+  el.style.maxHeight = h+'px';
+  el.style.overflow = 'hidden';
+  void el.offsetHeight;
+  requestAnimationFrame(()=> el.classList.add(className));
+  setTimeout(()=>{ el.remove(); }, 380);
+}
+
+/* ---------- single-block focus animation ---------- */
+let focusBlockId = null;
+function animateBlock(blockId){
+  const block = findBlock(blockId);
+  if(!block) return;
+  const {from, to, newlyCompleted, thresholds, startDoneIds} = computeDelta(block);
+  focusBlockId = blockId;
+
+  document.getElementById('focusName').textContent = block.name;
+  document.getElementById('focusFill').style.width = from+'%';
+  document.getElementById('focusPct').textContent = Math.round(from)+'%';
+  document.getElementById('focusExit').classList.remove('show');
+
+  const pendingAtStart = block.subtasks.filter(s=>!startDoneIds.has(s.id));
+  document.getElementById('focusMeta').textContent = pendingAtStart.length
+    ? '0 de ' + newlyCompleted.length + ' marcados nesta rodada'
+    : 'nenhuma pendência nesta rodada';
+
+  const listEl = document.getElementById('focusList');
+  if(pendingAtStart.length){
+    listEl.innerHTML = pendingAtStart.map(s=>`
+      <div class="focus-item" id="fitem-${s.id}">
+        <div class="fcheck"></div>
+        <div class="ftext">${escapeHtml(s.text)}</div>
+      </div>`).join('');
+  } else {
+    listEl.innerHTML = '<div class="focus-empty-hint">tudo em dia neste bloco.</div>';
+  }
+
+  const globalDoneNow = totalCompletedCount();
+  const badgeBaseline = globalDoneNow - newlyCompleted.length;
+  const badgeEl = document.getElementById('focusFolderCount');
+  badgeEl.textContent = badgeBaseline;
+
+  document.getElementById('focusOverlay').classList.add('show');
+
+  const fill = document.getElementById('focusFill');
+  const pctEl = document.getElementById('focusPct');
+  const metaEl = document.getElementById('focusMeta');
+  let confettiFired = false;
+  let poppedCount = 0;
+
+  setTimeout(()=>{
+    animateValue(from, to, 2000, (val)=>{
+      fill.style.width = val + '%';
+      pctEl.textContent = Math.round(val) + '%';
+      thresholds.forEach((th, i)=>{
+        if(val >= th - 0.01 && i === poppedCount){
+          const item = newlyCompleted[i];
+          const el = document.getElementById('fitem-'+item.id);
+          if(el){
+            const rect = el.getBoundingClientRect();
+            flyToFolder(rect, item.text, document.querySelector('.focus-folder-badge'));
+            removeRowAnimated(el, 'leaving');
+          }
+          poppedCount++;
+          metaEl.textContent = poppedCount + ' de ' + newlyCompleted.length + ' marcados nesta rodada';
+        }
+      });
+      if(val >= 99.5 && to === 100 && from < 100 && !confettiFired){
+        confettiFired = true;
+        fireConfetti();
+      }
+    }, ()=>{
+      document.getElementById('focusExit').classList.add('show');
+    });
+  }, 400);
+}
+function closeFocus(){
+  const block = findBlock(focusBlockId);
+  if(block){ commitBlockSnapshot(block); saveState(state); }
+  document.getElementById('focusOverlay').classList.remove('show');
+  render();
+  focusBlockId = null;
+}
+
+/* ---------- whole-board clean-mode animation ---------- */
+function animateAll(){
+  document.body.classList.add('clean-mode');
+  document.getElementById('exitCleanBtn').classList.remove('show');
+  let remaining = 0;
+
+  const deltas = state.blocks.map(b => ({ block: b, delta: computeDelta(b) }));
+  const globalBaseline = deltas.reduce((acc, d)=> acc + d.delta.startCount, 0);
+  const folderCountEl = document.getElementById('folderCount');
+  const folderTileEl = document.getElementById('folderTile');
+  if(folderCountEl) folderCountEl.textContent = globalBaseline;
+  let globalPopped = 0;
+
+  deltas.forEach(({block, delta})=>{
+    const {from, to, newlyCompleted, thresholds} = delta;
+    const fill = document.getElementById('fill-'+block.id);
+    const pctEl = document.getElementById('pct-'+block.id);
+    const metaEl = document.getElementById('meta-'+block.id);
+    if(!fill || !pctEl) return;
+    remaining++;
+    let fired = false;
+    let poppedCount = 0;
+    animateValue(from, to, 2000, (val)=>{
+      fill.style.width = val+'%';
+      pctEl.textContent = Math.round(val)+'%';
+      thresholds.forEach((th,i)=>{
+        if(val >= th - 0.01 && i === poppedCount){
+          const item = newlyCompleted[i];
+          if(metaEl){
+            const rect = metaEl.getBoundingClientRect();
+            flyToFolder(rect, item.text, folderTileEl);
+          }
+          poppedCount++;
+          globalPopped++;
+          if(metaEl){
+            const startDoneCount = block.subtasks.length ? Math.round(from/100*block.subtasks.length) : 0;
+            metaEl.textContent = (startDoneCount + poppedCount) + '/' + block.subtasks.length + ' concluídas';
+          }
+        }
+      });
+      if(val >= 99.5 && to===100 && from<100 && !fired){ fired = true; fireConfetti(); }
+    }, ()=>{
+      remaining--;
+      if(remaining === 0){ document.getElementById('exitCleanBtn').classList.add('show'); }
+    });
+  });
+  if(remaining === 0){ document.getElementById('exitCleanBtn').classList.add('show'); }
+}
+function exitCleanMode(){
+  state.blocks.forEach(block=> commitBlockSnapshot(block));
+  saveState(state);
+  document.body.classList.remove('clean-mode');
+  document.getElementById('exitCleanBtn').classList.remove('show');
+  render();
+}
+
+/* ---------- init ---------- */
+render();
+</script>
+</body>
+</html>
